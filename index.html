@@ -2,171 +2,422 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Hex Code Finder</title>
+  <title>Button Clicker + Prestige</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:#121212;
-      color:#f5f5f5;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      min-height:100vh;
-      margin:0;
+      font-family: 'Courier New', monospace;
+      background: linear-gradient(135deg, #0f0f23, #1a1a3a);
+      color: #e0e0ff;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    .picker-wrapper {
-      background:#1e1e1e;
-      padding:20px 24px;
-      border-radius:12px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.5);
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-      max-width:320px;
-      width:100%;
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
     }
 
-    .picker-header {
-      font-size:18px;
-      font-weight:600;
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+        padding: 10px;
+      }
     }
 
-    .picker-row {
-      display:flex;
-      align-items:center;
-      gap:10px;
+    .panel {
+      background: rgba(20, 20, 40, 0.9);
+      border: 2px solid #444;
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
     }
 
-    input[type="color"] {
-      appearance:none;
-      -webkit-appearance:none;
-      border:none;
-      padding:0;
-      width:50px;
-      height:32px;
-      border-radius:6px;
-      cursor:pointer;
-      background:none;
+    .main-clicker {
+      grid-column: span 2;
+      text-align: center;
     }
 
-    input[type="color"]::-webkit-color-swatch-wrapper {
-      padding:0;
-      border-radius:6px;
+    @media (max-width: 900px) {
+      .main-clicker {
+        grid-column: span 1;
+      }
     }
 
-    input[type="color"]::-webkit-color-swatch {
-      border:none;
-      border-radius:6px;
+    .points-display {
+      font-size: 2.5em;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px #00ff88;
     }
 
-    input[type="color"]::-moz-color-swatch {
-      border:none;
-      border-radius:6px;
+    .click-button {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: 4px solid #00ff88;
+      background: radial-gradient(circle, #00ff88, #008844);
+      font-size: 1.5em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.1s;
+      box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+      background-image: url('https://cdn.jsdelivr.net/gh/LostInTarot/PixelArt@main/items/coin.png');
+      background-size: cover;
+      background-position: center;
     }
 
-    .hex-display-row {
-      display:flex;
-      gap:8px;
-      align-items:center;
+    .click-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 40px rgba(0, 255, 136, 0.5);
     }
 
-    .hex-label {
-      font-size:14px;
-      opacity:0.8;
+    .click-button:active {
+      transform: scale(0.95);
     }
 
-    .hex-input {
-      flex:1;
-      padding:6px 8px;
-      border-radius:6px;
-      border:1px solid #333;
-      background:#111;
-      color:#f5f5f5;
-      font-family:monospace;
-      font-size:14px;
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+      font-size: 1.2em;
     }
 
-    .copy-btn {
-      padding:6px 10px;
-      border-radius:6px;
-      border:none;
-      background:#3b82f6;
-      color:#fff;
-      font-size:13px;
-      cursor:pointer;
-      white-space:nowrap;
+    .prestige-section {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 215, 0, 0.1);
+      border: 2px solid #facc15;
+      border-radius: 8px;
     }
 
-    .copy-btn:active {
-      transform:translateY(1px);
-      background:#2563eb;
+    .prestige-button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(45deg, #facc15, #f4b400);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      background-image: url('https://cdn.jsdelivr.net/gh/LostInTarot/PixelArt@main/items/gold.png');
+      background-size: 24px;
+      background-repeat: no-repeat;
+      background-position: 10px center;
+      padding-left: 40px;
     }
 
-    .preview {
-      height:40px;
-      border-radius:8px;
-      border:1px solid #333;
+    .prestige-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(250, 204, 21, 0.4);
     }
 
-    .status {
-      font-size:12px;
-      opacity:0.8;
-      min-height:16px;
+    .prestige-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .upgrades-panel h3, .auto-panel h3 {
+      color: #00ff88;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .upgrade-list, .auto-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .upgrade-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      margin-bottom: 8px;
+      background: rgba(0, 255, 136, 0.1);
+      border-radius: 6px;
+      border-left: 4px solid #00ff88;
+    }
+
+    .upgrade-icon {
+      width: 32px;
+      height: 32px;
+      image-rendering: pixelated;
+    }
+
+    .upgrade-name {
+      flex: 1;
+      margin-left: 10px;
+      font-weight: 500;
+    }
+
+    .upgrade-cost {
+      font-weight: bold;
+      color: #facc15;
+    }
+
+    .buy-btn {
+      background: #00ff88;
+      color: #000;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .buy-btn:hover:not(:disabled) {
+      background: #00dd77;
+    }
+
+    .buy-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .multiplier-display {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 1.3em;
+      color: #facc15;
+      font-weight: bold;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(20, 20, 40, 0.5);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #00ff88;
+      border-radius: 4px;
     }
   </style>
 </head>
 <body>
-  <div class="picker-wrapper">
-    <div class="picker-header">Hex Color Picker</div>
-
-    <div class="picker-row">
-      <label for="colorPicker">Pick color:</label>
-      <input id="colorPicker" type="color" value="#ff0000" />
+  <div class="container">
+    <div class="panel main-clicker">
+      <div class="points-display" id="pointsDisplay">0</div>
+      <button class="click-button" id="clickButton">Click!</button>
+      <div class="stats">
+        <div>Per Click: <span id="clickValue">1</span></div>
+        <div>Per Sec: <span id="autoValue">0</span></div>
+        <div>Total: <span id="totalPoints">0</span></div>
+      </div>
+      <div class="prestige-section">
+        <div>Prestige Level: <span id="prestigeLevel">0</span> (x<span id="prestigeMultiplier">1.00</span>)</div>
+        <button class="prestige-button" id="prestigeButton" disabled>Prestige (0)</button>
+      </div>
     </div>
 
-    <div class="hex-display-row">
-      <span class="hex-label">Hex:</span>
-      <input id="hexValue" class="hex-input" type="text" readonly />
-      <button id="copyBtn" class="copy-btn" type="button">Copy</button>
+    <div class="panel" id="upgradesPanel">
+      <h3>🛒 Upgrades</h3>
+      <div class="upgrade-list" id="upgradeList"></div>
     </div>
 
-    <div id="preview" class="preview"></div>
-    <div id="status" class="status"></div>
+    <div class="panel" id="autoPanel">
+      <h3>🤖 Auto Clickers</h3>
+      <div class="auto-list" id="autoList"></div>
+    </div>
   </div>
 
   <script>
-    const colorInput = document.getElementById('colorPicker');
-    const hexInput = document.getElementById('hexValue');
-    const preview = document.getElementById('preview');
-    const copyBtn = document.getElementById('copyBtn');
-    const status = document.getElementById('status');
+    // Game state
+    const state = {
+      points: 0,
+      totalPoints: 0,
+      clickValue: 1,
+      autoValue: 0,
+      prestigeLevel: 0,
+      prestigeMultiplier: 1.0,
+      upgrades: {},
+      autos: {},
+      lastTick: 0
+    };
 
-    function updateFromPicker() {
-      const hex = colorInput.value; // already a hex string like "#ff0000" [web:2][web:15]
-      hexInput.value = hex;
-      preview.style.backgroundColor = hex;
-      status.textContent = '';
+    // Upgrade & Auto definitions
+    const upgrades = [
+      { id: 'multi1', name: 'Double Click', cost: 10, effect: () => state.clickValue *= 2, icon: 'https://cdn.jsdelivr.net/gh/LostInTarot/PixelArt@main/items/sword.png' },
+      { id: 'multi2', name: 'Triple Click', cost: 50, effect: () => state.clickValue *= 3, icon: 'https://cdn.jsdelivr.net/gh/LostInTarot/PixelArt@main/items/shield.png' },
+      { id: 'multi3', name: 'Mega Click', cost: 200, effect: () => state.clickValue *= 5, icon: 'https://cdn.jsdelivr.net/gh/LostInTarot/PixelArt@main/items/heart.png' }
+    ];
+
+    const autos = [
+      { id: 'cursor1', name: 'Cursor (1/sec)', cost: 20, effect: () => state.autoValue += 1, icon: 'https://cdn.jsdelivr.net/gh/LostInTarot/PixelArt@main/items/mouse.png' },
+      { id: 'cursor2', name: 'Fast Cursor (5/sec)', cost: 100, effect: () => state.autoValue += 5, icon: 'https://cdn.jsdelivr.net/gh/LostInTarot/PixelArt@main/items/mouse.png' },
+      { id: 'auto3', name: 'Robot (10/sec)', cost: 500, effect: () => state.autoValue += 10, icon: 'https://cdn.jsdelivr.net/gh/LostInTarot/PixelArt@main/items/robot.png' }
+    ];
+
+    // DOM elements
+    const elements = {
+      pointsDisplay: document.getElementById('pointsDisplay'),
+      clickButton: document.getElementById('clickButton'),
+      clickValue: document.getElementById('clickValue'),
+      autoValue: document.getElementById('autoValue'),
+      totalPoints: document.getElementById('totalPoints'),
+      prestigeLevel: document.getElementById('prestigeLevel'),
+      prestigeMultiplier: document.getElementById('prestigeMultiplier'),
+      prestigeButton: document.getElementById('prestigeButton'),
+      upgradeList: document.getElementById('upgradeList'),
+      autoList: document.getElementById('autoList')
+    };
+
+    // Functions
+    function updateDisplay() {
+      elements.pointsDisplay.textContent = Math.floor(state.points).toLocaleString();
+      elements.clickValue.textContent = state.clickValue.toLocaleString();
+      elements.autoValue.textContent = state.autoValue.toLocaleString();
+      elements.totalPoints.textContent = state.totalPoints.toLocaleString();
+      elements.prestigeLevel.textContent = state.prestigeLevel;
+      elements.prestigeMultiplier.textContent = state.prestigeMultiplier.toFixed(2);
+
+      const prestigeGain = Math.floor(state.totalPoints / 5000);
+      elements.prestigeButton.textContent = `Prestige +${prestigeGain} (Reset for x${(1 + prestigeGain * 0.1).toFixed(2)})`;
+      elements.prestigeButton.disabled = prestigeGain === 0;
+
+      updateUpgradeUI();
     }
 
-    async function copyHex() {
-      const hex = hexInput.value.trim();
-      if (!hex) return;
+    function buildUpgradeUI() {
+      upgrades.forEach(upgrade => {
+        const div = document.createElement('div');
+        div.className = 'upgrade-item';
+        div.innerHTML = `
+          <img src="${upgrade.icon}" alt="${upgrade.name}" class="upgrade-icon">
+          <span class="upgrade-name">${upgrade.name}</span>
+          <span class="upgrade-cost">Cost: ${upgrade.cost.toLocaleString()}</span>
+          <button class="buy-btn" onclick="buyUpgrade('${upgrade.id}')">Buy</button>
+        `;
+        elements.upgradeList.appendChild(div);
+      });
 
-      try {
-        await navigator.clipboard.writeText(hex); [web:13]
-        status.textContent = 'Copied ' + hex + ' to clipboard.';
-      } catch (err) {
-        status.textContent = 'Could not copy. You can copy it manually.';
+      autos.forEach(auto => {
+        const div = document.createElement('div');
+        div.className = 'upgrade-item';
+        div.innerHTML = `
+          <img src="${auto.icon}" alt="${auto.name}" class="upgrade-icon">
+          <span class="upgrade-name">${auto.name}</span>
+          <span class="upgrade-cost">Cost: ${auto.cost.toLocaleString()}</span>
+          <button class="buy-btn" onclick="buyAuto('${auto.id}')">Buy</button>
+        `;
+        elements.autoList.appendChild(div);
+      });
+    }
+
+    function updateUpgradeUI() {
+      upgrades.forEach((upgrade, i) => {
+        const item = elements.upgradeList.children[i];
+        const btn = item.querySelector('.buy-btn');
+        const costEl = item.querySelector('.upgrade-cost');
+        costEl.textContent = `Cost: ${upgrade.cost.toLocaleString()}`;
+        btn.disabled = state.points < upgrade.cost;
+      });
+
+      autos.forEach((auto, i) => {
+        const item = elements.autoList.children[i];
+        const btn = item.querySelector('.buy-btn');
+        const costEl = item.querySelector('.upgrade-cost');
+        costEl.textContent = `Cost: ${auto.cost.toLocaleString()}`;
+        btn.disabled = state.points < auto.cost;
+      });
+    }
+
+    window.buyUpgrade = function(id) {
+      const upgrade = upgrades.find(u => u.id === id);
+      if (state.points >= upgrade.cost) {
+        state.points -= upgrade.cost;
+        upgrade.effect();
+        upgrade.cost = Math.floor(upgrade.cost * 1.5);
+        updateDisplay();
+      }
+    };
+
+    window.buyAuto = function(id) {
+      const auto = autos.find(a => a.id === id);
+      if (state.points >= auto.cost) {
+        state.points -= auto.cost;
+        auto.effect();
+        auto.cost = Math.floor(auto.cost * 1.5);
+        updateDisplay();
+      }
+    };
+
+    function calculatePrestigeGain() {
+      return Math.floor(state.totalPoints / 5000);
+    }
+
+    function performPrestige() {
+      const gain = calculatePrestigeGain();
+      if (gain > 0) {
+        state.prestigeLevel += gain;
+        state.prestigeMultiplier *= (1 + gain * 0.1);
+        resetGame();
+        updateDisplay();
       }
     }
 
-    // Initialize UI
-    updateFromPicker();
+    function resetGame() {
+      state.points = 0;
+      state.clickValue = 1 * state.prestigeMultiplier;
+      state.autoValue = 0 * state.prestigeMultiplier;
+    }
 
-    // Live updates as user drags in the picker [web:9][web:1]
-    colorInput.addEventListener('input', updateFromPicker);
-    copyBtn.addEventListener('click', copyHex);
+    function gameLoop(time) {
+      const delta = (time - state.lastTick) / 1000;
+      state.points += state.autoValue * delta * state.prestigeMultiplier;
+      state.totalPoints += state.autoValue * delta;
+      state.lastTick = time;
+      updateDisplay();
+      requestAnimationFrame(gameLoop);
+    }
+
+    function saveGame() {
+      localStorage.setItem('clickerSave', JSON.stringify(state));
+    }
+
+    function loadGame() {
+      const save = localStorage.getItem('clickerSave');
+      if (save) {
+        Object.assign(state, JSON.parse(save));
+        updateDisplay();
+      }
+    }
+
+    // Event listeners
+    elements.clickButton.addEventListener('click', () => {
+      state.points += state.clickValue * state.prestigeMultiplier;
+      state.totalPoints += state.clickValue * state.prestigeMultiplier;
+      updateDisplay();
+    });
+
+    elements.prestigeButton.addEventListener('click', performPrestige);
+
+    // Init
+    buildUpgradeUI();
+    updateDisplay();
+    loadGame();
+    requestAnimationFrame(time => {
+      state.lastTick = time;
+      requestAnimationFrame(gameLoop);
+    });
+
+    window.addEventListener('beforeunload', saveGame);
   </script>
 </body>
 </html>
